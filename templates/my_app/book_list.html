@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Book List</title>
+</head>
+<body>
+    <h1>Book List</h1>
+
+    {% for book in books %}
+        {{ book.title }} ({% url 'book-list-cbv' book.pk %}) -
+        {{ book.author }} ({{ book.price }} UAH.)
+    {% endfor %}
+
+    {%  if is_paginated %}
+
+        {% if page_obj.has_previous %}
+            Previous(?page_obj={{ page_obj.previous_page_number }})
+        {% endif %}
+
+        Page {{ page_obj.number }} with {{ page_obj.paginator.num_pages }}
+
+        {% if page_obj.has_next %}
+            Next(?page={{ page_obj.next_page_number }})
+        {% endif %}
+
+    {% endif %}
+</body>
+</html>

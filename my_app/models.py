@@ -1,5 +1,6 @@
 from django.db import models
 from .managers import ActiveManager
+from django.urls import reverse
 
 
 class Student(models.Model):
@@ -24,10 +25,64 @@ class Author(models.Model):
 
 
 class Book(models.Model):
-    title = models.CharField(max_length=50)
-    author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books")
-    price = models.DecimalField(max_digits=0, default=0)
-    stock = models.PositiveIntegerField(default=0)
+    title = models.CharField(max_length=50, verbose_name="Book Title")
+    author = models.CharField(max_length=100, verbose_name="Author")
+    description = models.TextField(verbose_name="Description")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Price")
+    published_year = models.PositiveIntegerField(verbose_name="Published Year")
+    created_at = models.DateTimeField(auto_now_add=True)
+    # stock = models.PositiveIntegerField(default=0)
+    # author = models.ForeignKey(Author, on_delete=models.CASCADE, related_name="books")
+
+    def __str__(self):
+        return f"{self.title} - {self.author}"
+
+    def get_absolute_url(self):
+        return reverse("book-detail-cbv", kwargs={"pk": self.pk})
+
+
+class Category(models.Model):
+    name = models.CharField(max_length=50)
+
+    class Meta:
+        verbose_name_plural = "Categories"
+
+    def __str__(self):
+        return self.name
+
+
+class Course(models.Model):
+    LEVEL_CHOICES = [
+        ("beginner", "Початковий"),
+        ("intermediate", "Серeдній"),
+        ("advanced", "Просунутий"),
+    ]
+
+    title = models.CharField(max_length=50, verbose_name="Назва")
+    slug = models.SlugField(max_length=100, unique=True, verbose_name="Slug")
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="courses")
+    description = models.TextField(verbose_name="Опис")
+    price = models.DecimalField(max_digits=10, decimal_places=2, default=0, verbose_name="Ціна")
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default="beginner")
+    is_published = models.BooleanField(default=False, verbose_name="Опубліковано")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
+class Lesson(models.Model):
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="lessons")
+    title = models.CharField(max_length=100)
+    order = models.PositiveIntegerField(default=0)
+    duration_minutes = models.PositiveIntegerField(default=0)
+    is_free = models.BooleanField(default=False)
+
+    class Meta:
+        ordering = ['order']
+
+    def __str__(self):
+        return f"{self.order}: {self.title}"
 
 
 # class Warehouse(models.Model):
@@ -62,8 +117,17 @@ class Book(models.Model):
 #     price_at_order = models.DecimalField(max_digits=10)
 
 
+class Article(models.Model):
+    title = models.CharField(max_length=100)
+    content = models.TextField(verbose_name="Content")
+    author = models.ForeignKey(Author, on_delete=models.CASCADE, verbose_name="Author" ,related_name="articles")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
+    def __str__(self):
+        return self.title
 
-
+    def get_absolute_url(self):
+        return reverse("article-detail-cbv", kwargs={"pk": self.pk})
 
 
