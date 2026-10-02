@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ book.title }}</title>
+</head>
+<body>
+    <h1>{{ book.title }}</h1>
+
+
+    {{ book.title }}({% url 'book-detail-cbv' book.pk %}) -
+    Author: {{ book.author }}
+    Year of publication: ({{ book.published_year }}y.)
+    Price: {{ book.price }} UAH.
+
+    <br>
+    Description: {{ book.description|linebreaks }}
+
+    Back to catalog ({% url 'book-list-cbv' %})
+</body>
+</html>
